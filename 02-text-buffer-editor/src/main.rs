@@ -72,7 +72,7 @@ fn main() {
                 let mut temp = String::new();
                 let (start_slice, end_slice) = find_word(&buffer, delete_word);
                 if start_slice == 0 && end_slice == 0 {
-                    println!("Error: Invalid indices");
+                    println!("Error: Invalid indices or word not found");
                     continue;
                 }
                 temp.push_str(&buffer[..start_slice]);
@@ -199,7 +199,7 @@ fn find_word(input: &str, word: &str) -> (usize, usize) {
 
 
     for (index, &elements) in input_bytes.iter().enumerate() {
-        if &input[index..index + word.len()] == word {
+        if ((index + word_bytes.len()) <= input_bytes.len()) && (&input[index..index + word.len()] == word) {
             return (index, index + word.len());
         }
     }
