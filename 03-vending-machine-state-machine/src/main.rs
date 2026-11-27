@@ -3,8 +3,14 @@ use std::io;
 #[derive(Debug)]
 enum MachineState {
     Idle,
-    AwaitingPayment,
-    Dispensing,
+    AwaitingPayment {
+        item_id: i32,
+        balance: i32,
+    },
+    Dispensing {
+        item_id: i32,
+        balance: i32,
+    },
     Maintenance,
 }
 
@@ -46,7 +52,6 @@ impl Item {
 struct VendingMachine {
     stock: [Item; 5],
     state: MachineState,
-    current_item: Option<Item>,
 }
 
 impl VendingMachine {
@@ -60,7 +65,6 @@ impl VendingMachine {
                 Item::new(5, Product::Candy, 125, 6),
             ],
             state: MachineState::Idle,
-            current_item: None,
         }
     }
     fn show(&self) {
@@ -70,7 +74,11 @@ impl VendingMachine {
         }
         println!("");
     }
-    fn select_item(&self, id: i32) {
+    fn inspect(&self, mut id: usize) {
+        id -= 1;
+        println!("Product: {:?}", self.stock[id].product);
+        println!("Price: ${}.{:02}", self.stock[id].price / 100, self.stock[id].price % 100);
+        println!("Stock: {}", self.stock[id].stock);
     }
 }
 
@@ -82,6 +90,8 @@ fn main() {
     println!("");
     let vending_machine = VendingMachine::new();
     vending_machine.show();
+    vending_machine.inspect(1);
+    help();
     /*loop {
         let mut input = String::new();
         io::stdin()
@@ -89,4 +99,33 @@ fn main() {
             .expect("Could not read line");
         break;
     }*/
+}
+
+fn help() {
+    println!("");
+    println!("================ AVAILABLE COMMANDS ================");
+    println!("");
+    println!("Customer Commands:");
+    println!("  show                   Display all available products");
+    println!("  inspect <id>           Display product details");
+    println!("  select <id>            Select a product");
+    println!("  insert <cents>         Insert a coin");
+    println!("  status                 Display current machine status");
+    println!("  dispense               Dispense the selected product");
+    println!("  cancel                 Cancel purchase and refund balance");
+    println!("");
+    println!("Maintenance Commands:");
+    println!("  maintenance            Enter maintenance mode");
+    println!("  restock <id> <qty>     Restock a product");
+    println!("  setprice <id> <cents>  Update a product's price");
+    println!("  resume                 Exit maintenance mode");
+    println!("");
+    println!("General Commands:");
+    println!("  help                   Display available commands");
+    println!("  quit                   Exit the vending machine");
+    println!("");
+    println!("Accepted Coins:");
+    println!("  5, 10, 25, 100, 200 cents");
+    println!("");
+    println!("====================================================");
 }
